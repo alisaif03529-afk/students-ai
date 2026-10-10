@@ -1,0 +1,122 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+html, body { overflow-x: hidden; }
+
+body {
+  font-family: "Outfit", "Segoe UI", sans-serif; color: #fff;
+  background: radial-gradient(circle at 50% 35%, #1c1a12 0%, #0b0a07 70%);
+  min-height: 100vh;
+}
+
+.brand-top {
+  position: fixed; top: 14px; left: 16px; z-index: 5;
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 700; font-size: 18px; color: #fff;
+}
+
+/* Fireflies */
+#fireflies { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+#fireflies span {
+  position: absolute; width: 4px; height: 4px; border-radius: 50%;
+  background: #ffd84d; box-shadow: 0 0 8px #ffd84d; opacity: 0.7;
+  animation: float 6s ease-in-out infinite;
+}
+@keyframes float { 50% { transform: translate(20px, -30px); } }
+
+/* Layout (3D flip ke liye perspective) */
+.room {
+  position: relative; z-index: 1; width: 100%;
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding: 90px 24px 60px;
+  perspective: 1200px;
+}
+
+/* Card: chauDai fixed, transform ke liye GPU layer */
+.card {
+  position: relative; width: min(400px, 92vw);
+  padding: 32px 28px; border-radius: 22px;
+  background: rgba(40, 36, 26, 0.88); border: 1px solid #3a3526;
+  display: flex; flex-direction: column; gap: 14px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+.card h2 {
+  margin: 0; text-align: center; font-size: 30px; font-weight: 800;
+  background: linear-gradient(90deg, #fde68a, #fbbf24);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.sub { margin: 0 0 6px; text-align: center; color: #b9b29a; font-size: 14px; }
+
+/* Login / Sign Up tabs */
+.tabs {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+  padding: 5px; border-radius: 14px; background: #14120d; border: 1px solid #3a3526;
+}
+.tab {
+  padding: 10px; border: 0; border-radius: 10px; cursor: pointer;
+  background: transparent; color: #b9b29a; font: 600 15px "Outfit", sans-serif;
+  transition: background 0.3s, color 0.3s;
+}
+.tab:hover { color: #fff; }
+.tab.active {
+  background: linear-gradient(90deg, #fde047, #f59e0b); color: #1c1917;
+  box-shadow: 0 0 14px rgba(253, 224, 71, 0.4);
+}
+
+/* Naam wala field: smooth expand/collapse */
+.name-wrap {
+  max-height: 0; overflow: hidden; opacity: 0;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+  margin-top: -14px;
+}
+.name-wrap.open {
+  max-height: 80px; opacity: 1; margin-top: 0;
+}
+
+/* Inputs */
+.card input {
+  width: 100%; padding: 14px 16px; border-radius: 12px; font-size: 16px;
+  background: #14120d; border: 1px solid #3a3526; color: #fff;
+  font-family: inherit; outline: none; transition: border-color 0.3s, box-shadow 0.3s;
+}
+.card input:focus { border-color: #ffd84d; box-shadow: 0 0 0 3px rgba(255, 216, 77, 0.2); }
+.name-wrap input { margin: 0; }
+
+/* Buttons */
+.yellow {
+  padding: 14px; border: 0; border-radius: 12px; background: #ffd91a;
+  color: #000; font-weight: 600; font-size: 16px; cursor: pointer; font-family: inherit;
+  transition: background 0.2s, transform 0.15s;
+}
+.yellow:hover { background: #ffe34d; }
+.yellow:active { transform: scale(0.98); }
+.yellow:disabled { opacity: 0.6; cursor: wait; }
+
+.error { color: #ff6b6b; min-height: 1.2em; margin: 0; font-size: 14px; text-align: center; }
+.or { text-align: center; font-size: 12px; color: #8d8670; letter-spacing: 0.5px; }
+
+.social { display: flex; gap: 10px; }
+.soc {
+  flex: 1; padding: 12px; border-radius: 12px; border: 1px solid #3a3526;
+  background: #2a271c; color: #fff; cursor: pointer; font-family: inherit;
+  transition: border-color 0.3s, transform 0.15s;
+}
+.soc:hover { border-color: #ffd84d; transform: translateY(-1px); }
+
+/* Neon rings: blink kam karne ke liye GPU layer */
+[data-neon] .nr-ring { will-change: transform, border-radius; backface-visibility: hidden; }
+
+[hidden] { display: none !important; }
+
+/* Phone */
+@media (max-width: 560px) {
+  .room { padding: 80px 14px 40px; }
+  .card { padding: 24px 18px; border-radius: 18px; }
+  .card h2 { font-size: 26px; }
+  .social { flex-direction: column; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #fireflies span { animation: none; }
+}

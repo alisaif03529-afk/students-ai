@@ -1,0 +1,143 @@
+/* ============ Students AI — Premium Glow Layer ============ */
+body {
+  --glow-cyan: #22d3ee;
+  --glow-violet: #a78bfa;
+  --glow-pink: #f472b6;
+}
+
+/* Sab glow wale elements: sirf box-shadow badlega, position nahi */
+body #side button,
+body #top button,
+body #chatSearch,
+body #form input#input,
+body #form button,
+body #who {
+  position: relative;
+  isolation: isolate;
+  animation: gIdle 3.4s ease-in-out infinite;
+  transition: box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+/* Upar se sweep karti chamak */
+body #side button::after,
+body #top button::after,
+body #form button::after,
+body #who::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.22) 50%, transparent 65%);
+  background-size: 250% 100%;
+  animation: gSweep 4.5s linear infinite;
+}
+
+/* Hover par thoda tez glow, bina hile */
+body #side button:hover,
+body #top button:hover,
+body #form button:hover {
+  box-shadow:
+    0 0 0 1px rgba(34, 211, 238, 0.85),
+    0 0 18px rgba(34, 211, 238, 0.7),
+    0 0 36px rgba(167, 139, 250, 0.5);
+}
+
+/* Search aur message input focus par sabse tez glow */
+body #chatSearch:focus,
+body #form input#input:focus {
+  outline: none;
+  animation: none;
+  box-shadow:
+    0 0 0 1px rgba(34, 211, 238, 0.9),
+    0 0 22px rgba(34, 211, 238, 0.75),
+    0 0 44px rgba(167, 139, 250, 0.45);
+}
+
+/* Chat list ke items: halka glow sirf hover par */
+body #list > div {
+  transition: box-shadow 0.3s ease;
+}
+body #list > div:hover {
+  box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.6), 0 0 16px rgba(167, 139, 250, 0.35);
+}
+
+/* Brand text ko bhi chamkaayein */
+body #brand,
+body #brand span {
+  text-shadow: 0 0 10px rgba(34, 211, 238, 0.7), 0 0 22px rgba(167, 139, 250, 0.45);
+}
+
+/* ---------- Keyframes ---------- */
+@keyframes gIdle {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1px rgba(34, 211, 238, 0.55),
+      0 0 12px rgba(34, 211, 238, 0.45),
+      0 0 26px rgba(167, 139, 250, 0.25);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(167, 139, 250, 0.7),
+      0 0 20px rgba(167, 139, 250, 0.6),
+      0 0 38px rgba(244, 114, 182, 0.35);
+  }
+}
+
+@keyframes gSweep {
+  from { background-position: 150% 0; }
+  to { background-position: -150% 0; }
+}
+
+/* Dark aur light dono mode mein same glow */
+body.dark #side button,
+body.dark #top button,
+body.dark #chatSearch,
+body.dark #form input#input {
+  background-color: rgba(15, 15, 30, 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body #side button,
+  body #top button,
+  body #chatSearch,
+  body #form input#input,
+  body #form button,
+  body #who,
+  body #side button::after,
+  body #top button::after,
+  body #form button::after,
+  body #who::after {
+    animation: none !important;
+  }
+}
+/* ---------- Sidebar: sabhi buttons ek hi size ke (Home Page = My Notes) ---------- */
+body #side button {
+  height: 60px !important;
+  min-height: 60px !important;
+  max-height: 60px !important;
+  box-sizing: border-box !important;
+  padding: 0 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1.2 !important;
+  border-radius: 14px !important;
+  font-size: 15px !important;
+}
+/* ---------- Sidebar scroll: History neeche tak pahunche ---------- */
+body #side {
+  height: 100vh !important;
+  max-height: 100vh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding-bottom: 24px !important;
+  box-sizing: border-box !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(167, 139, 250, 0.6) transparent;
+}
+body #side::-webkit-scrollbar { width: 6px; }
+body #side::-webkit-scrollbar-thumb {
+  background: rgba(167, 139, 250, 0.6);
+  border-radius: 6px;
+}

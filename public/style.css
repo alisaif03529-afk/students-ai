@@ -1,0 +1,1417 @@
+/* ---------- रंग (लाइट और डार्क) ---------- */
+:root {
+  --bg: #ffffff;
+  --side: #f9f9f9;
+  --line: #e5e5e5;
+  --text: #1f1f1f;
+  --muted: #6b6b6b;
+  --hover: #ececec;
+  --input: #ffffff;
+  --user: #2563eb;
+  --inline: #f0f0f0;
+  --code: #1e1e1e;
+  --code-text: #e6e6e6;
+}
+
+body.dark {
+  --bg: #212121;
+  --side: #171717;
+  --line: #2f2f2f;
+  --text: #ececec;
+  --muted: #9b9b9b;
+  --hover: #2a2a2a;
+  --input: #2f2f2f;
+  --inline: #2f2f2f;
+  --code: #0d0d0d;
+  --code-text: #e6e6e6;
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; margin: 0; }
+
+body {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  font-family: "Segoe UI", "Nirmala UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.2s, color 0.2s;
+}
+
+/* ---------- बाईं साइडबार ---------- */
+#side {
+  width: 260px;
+  flex-shrink: 0;
+  background: var(--side);
+  border-right: 1px solid var(--line);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#newChat {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+#newChat:hover { background: var(--hover); }
+
+#list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 8px;
+}
+
+#list > div {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+#list > div:hover,
+#list > div.active { background: var(--hover); }
+
+#list span {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+#list button {
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  opacity: 0.5;
+  cursor: pointer;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+#list button:hover { opacity: 1; background: var(--line); }
+
+/* ---------- दायाँ मुख्य हिस्सा ---------- */
+#main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+#top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+  color: var(--muted);
+}
+#top > div { display: flex; gap: 8px; }
+
+#theme, #logout {
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+}
+#theme:hover, #logout:hover { background: var(--hover); }
+
+/* चैट का क्षेत्र, बीच में 760px चौड़ा कॉलम */
+#chat {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px max(20px, calc((100% - 760px) / 2));
+}
+#chat::-webkit-scrollbar { width: 8px; }
+#chat::-webkit-scrollbar-thumb { background: var(--line); border-radius: 8px; }
+
+.msg {
+  font-size: 15px;
+  line-height: 1.7;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* यूज़र का मैसेज: दाईं ओर नीला बबल */
+.user {
+  align-self: flex-end;
+  max-width: 75%;
+  padding: 10px 16px;
+  border-radius: 18px;
+  border-bottom-right-radius: 6px;
+  background: var(--user);
+  color: #fff;
+  white-space: pre-wrap;
+}
+
+/* बॉट का जवाब: बिना बबल के, पूरी चौड़ाई में */
+.bot {
+  align-self: stretch;
+  padding: 2px 0;
+  white-space: normal;
+}
+
+.bot p { margin: 0 0 10px; }
+.bot p:last-child { margin-bottom: 0; }
+.bot ul, .bot ol { margin: 6px 0 10px; padding-left: 24px; }
+.bot li { margin: 3px 0; }
+.bot h1, .bot h2, .bot h3 {
+  margin: 14px 0 8px;
+  font-size: 17px;
+  font-weight: 600;
+}
+.bot strong { font-weight: 600; }
+.bot a { color: var(--user); }
+
+.bot code {
+  background: var(--inline);
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 13.5px;
+}
+
+.bot pre {
+  position: relative;
+  margin: 12px 0;
+  padding: 36px 14px 14px;
+  background: var(--code);
+  color: var(--code-text);
+  border-radius: 10px;
+  overflow-x: auto;
+}
+.bot pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+.copy {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 10px;
+  font-size: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ddd;
+  cursor: pointer;
+}
+.copy:hover { background: rgba(255, 255, 255, 0.2); }
+
+.bot table { border-collapse: collapse; margin: 8px 0; }
+.bot th, .bot td { border: 1px solid var(--line); padding: 6px 10px; }
+.bot th { background: var(--hover); }
+
+/* दोबारा बनाएँ बटन */
+.regen {
+  align-self: flex-start;
+  margin: 0;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+.regen:hover { background: var(--hover); color: var(--text); }
+
+/* ---------- नीचे इनपुट ---------- */
+#form {
+  display: flex;
+  gap: 10px;
+  padding: 14px max(20px, calc((100% - 760px) / 2)) 18px;
+  background: var(--bg);
+}
+
+#input {
+  flex: 1;
+  padding: 13px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  font-size: 15px;
+  outline: none;
+  background: var(--input);
+  color: var(--text);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+#input:focus { border-color: var(--user); }
+
+#form button {
+  padding: 0 22px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--user);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+#form button:hover { opacity: 0.9; }
+
+/* छोटी स्क्रीन */
+@media (max-width: 700px) {
+  #side { width: 180px; }
+  #chat { padding: 20px 16px; }
+  #form { padding: 12px 14px; }
+  .user { max-width: 88%; }
+}
+/* ---------- ब्रांड (Students AI) ---------- */
+#brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px 14px;
+}
+#brand span {
+  font-size: 18px;
+  font-weight: 700;
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+/* ---------- नई चैट बटन (customised) ---------- */
+#newChat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  /* अंदर का बैकग्राउंड थीम वाला, बाहर की border ग्रेडिएंट */
+  background:
+    linear-gradient(var(--bg), var(--bg)) padding-box,
+    linear-gradient(90deg, #2563eb, #7c3aed) border-box;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(37, 99, 235, 0.15);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+#newChat:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.25);
+  background:
+    linear-gradient(var(--hover), var(--hover)) padding-box,
+    linear-gradient(90deg, #2563eb, #7c3aed) border-box;
+}
+#newChat:active { transform: translateY(0); }
+#newChat:focus-visible { outline: 2px solid #7c3aed; outline-offset: 2px; }
+/* ---------- Welcome (नमस्ते) ---------- */
+#who {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 17px;
+  font-weight: 600;
+  background: linear-gradient(90deg, #2563eb, #7c3aed, #db2777);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradientMove 6s linear infinite, fadeSlide 0.6s ease both;
+}
+#who::before {
+  content: "👋";
+  display: inline-block;
+  -webkit-text-fill-color: initial;
+  animation: wave 1.8s ease-in-out infinite;
+  transform-origin: 70% 70%;
+}
+@keyframes gradientMove {
+  to { background-position: 200% center; }
+}
+@keyframes wave {
+  0%, 60%, 100% { transform: rotate(0deg); }
+  10%, 30% { transform: rotate(14deg); }
+  20% { transform: rotate(-8deg); }
+  40% { transform: rotate(10deg); }
+  50% { transform: rotate(-4deg); }
+}
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- ब्रांड और टॉप बार ---------- */
+#top {
+  backdrop-filter: blur(8px);
+  transition: background 0.3s ease;
+}
+#theme, #logout {
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+#theme:hover, #logout:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.18);
+}
+
+/* ---------- साइडबार की चैट लिस्ट ---------- */
+#list > div {
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  animation: fadeSlide 0.35s ease both;
+}
+#list > div:hover { transform: translateX(3px); }
+#list > div.active {
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.14), rgba(124, 58, 237, 0.14));
+  box-shadow: inset 3px 0 0 #7c3aed;
+}
+#list button {
+  transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s ease;
+}
+#list button:hover { transform: scale(1.12); }
+
+/* ---------- New Chat बटन (नई चमक) ---------- */
+#newChat {
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+#newChat:hover {
+  transform: translateY(-2px) scale(1.01);
+}
+
+/* ---------- मैसेज के आने की एनिमेशन ---------- */
+.msg {
+  animation: msgIn 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.user {
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+  transition: transform 0.2s ease;
+}
+.user:hover { transform: translateY(-1px); }
+
+/* ---------- इनपुट और भेजें बटन ---------- */
+#input {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+#input:focus {
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15), 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+#form button {
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  transition: transform 0.2s ease, box-shadow 0.25s ease, opacity 0.2s ease;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+}
+#form button:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.35);
+}
+#form button:active { transform: scale(0.97); }
+
+/* ---------- कॉपी और दोबारा बनाएँ बटन ---------- */
+.copy, .regen {
+  transition: background 0.2s ease, transform 0.15s ease, color 0.2s ease;
+}
+.copy:active, .regen:active { transform: scale(0.96); }
+.regen:hover {
+  border-color: #7c3aed;
+  color: #7c3aed;
+}
+
+/* ---------- जिनको एनिमेशन पसंद नहीं, उनके लिए ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+/* ---------- साइडबार चैट हिस्ट्री (customised) ---------- */
+#list {
+  gap: 4px;
+  padding-right: 2px;
+}
+
+#list > div {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 10px 10px 12px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  transition: background 0.25s ease, border-color 0.25s ease,
+              transform 0.2s ease, box-shadow 0.25s ease;
+  animation: fadeSlide 0.35s ease both;
+  overflow: hidden;
+}
+
+/* चैट के आगे आइकन */
+#list > div > span::before {
+  content: "💬";
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+#list > div > span {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: 0.1px;
+}
+
+/* hover: हल्का ग्रेडिएंट और उठाव */
+#list > div:hover {
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.08), rgba(124, 58, 237, 0.08));
+  border-color: rgba(124, 58, 237, 0.18);
+  transform: translateX(2px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+}
+
+/* चुनी हुई चैट: मजबूत ग्रेडिएंट और बाईं बैंगनी पट्टी */
+#list > div.active {
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.16), rgba(124, 58, 237, 0.16));
+  border-color: rgba(124, 58, 237, 0.3);
+  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.14);
+}
+#list > div.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #2563eb, #7c3aed);
+}
+#list > div.active > span {
+  font-weight: 600;
+  color: #5b21b6;
+}
+body.dark #list > div.active > span { color: #c4b5fd; }
+
+/* नाम बदलने और डिलीट बटन */
+#list > div > button {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 12px;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+#list > div:hover > button,
+#list > div.active > button { opacity: 0.7; transform: scale(1); }
+#list > div > button:hover {
+  opacity: 1;
+  background: rgba(124, 58, 237, 0.12);
+  color: #7c3aed;
+}
+/* डिलीट बटन पर लाल रंग */
+#list > div > button:last-child:hover {
+  background: rgba(220, 38, 38, 0.12);
+  color: #dc2626;
+}
+/* ---------- मेरे नोट्स ---------- */
+#notesBtn {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+#notesBtn:hover { background: var(--hover); transform: translateY(-1px); }
+
+.save-note {
+  display: block;
+  margin-top: 8px;
+  padding: 5px 12px;
+  border: 1px dashed #7c3aed;
+  border-radius: 8px;
+  background: transparent;
+  color: #7c3aed;
+  font-size: 12px;
+  cursor: pointer;
+}
+.save-note:hover:not(:disabled) { background: rgba(124, 58, 237, 0.08); }
+.save-note:disabled { opacity: 0.6; cursor: default; }
+body.dark .save-note { color: #c4b5fd; border-color: #8b5cf6; }
+
+.notes-head h2 {
+  margin: 4px 0 8px;
+  font-size: 20px;
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.notes-empty { color: var(--muted); font-size: 14px; }
+
+.note-card {
+  border: 1px solid var(--line);
+  border-left: 4px solid #7c3aed;
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: var(--side);
+  animation: msgIn 0.35s ease both;
+}
+.note-q {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+.note-a {
+  font-size: 14px;
+  line-height: 1.65;
+}
+.note-a p { margin: 0 0 8px; }
+.note-a p:last-child { margin-bottom: 0; }
+.note-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+.note-del {
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: #dc2626;
+  font-size: 12px;
+  cursor: pointer;
+}
+.note-del:hover { background: rgba(220, 38, 38, 0.08); }
+/* ---------- अध्याय नोट्स जनरेटर ---------- */
+.gen-box {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 18px;
+  background: var(--side);
+}
+.gen-box h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.gen-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.gen-row select,
+.gen-row input {
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--input);
+  color: var(--text);
+  font-size: 14px;
+  flex: 1;
+  min-width: 140px;
+}
+.gen-btn {
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+.gen-btn:disabled { opacity: 0.6; cursor: default; }
+.gen-out { margin-top: 14px; }
+.gen-result { margin-top: 8px; }
+
+#bookBtn {
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+#bookBtn:hover { background: var(--hover); transform: translateY(-1px); }
+.gen-row input[readonly] { opacity: 0.7; }
+#doubtBtn {
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+#doubtBtn:hover { background: var(--hover); transform: translateY(-1px); }
+.doubt-input {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--input);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+}
+
+#quizBtn {
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+#quizBtn:hover { background: var(--hover); transform: translateY(-1px); }
+.quiz-opt {
+  display: block;
+  width: 100%;
+  margin: 6px 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+}
+.quiz-opt:hover:not(:disabled) { background: var(--hover); }
+.quiz-opt.right { background: #dcfce7; border-color: #16a34a; color: #14532d; }
+.quiz-opt.wrong { background: #fee2e2; border-color: #dc2626; color: #7f1d1d; }
+body.dark .quiz-opt.right { background: #14532d; color: #dcfce7; }
+body.dark .quiz-opt.wrong { background: #7f1d1d; color: #fee2e2; }
+
+#qgenBtn {
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+#qgenBtn:hover { background: var(--hover); transform: translateY(-1px); }
+#examBtn {
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+#examBtn:hover { background: var(--hover); transform: translateY(-1px); }
+.exam-tabs { display: flex; gap: 8px; margin: 8px 0 14px; }
+.exam-tab {
+  padding: 8px 14px; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--bg); color: var(--text); cursor: pointer; font-size: 14px;
+}
+.exam-tab.active { background: linear-gradient(135deg, #2563eb, #7c3aed); color: #fff; border-color: transparent; }
+.exam-top {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 13px; color: var(--muted); margin-bottom: 10px; gap: 8px; flex-wrap: wrap;
+}
+.exam-timer {
+  font-weight: 700; font-size: 16px; color: #dc2626;
+  font-variant-numeric: tabular-nums;
+}
+.exam-map { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+.exam-num {
+  width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--bg); color: var(--text); cursor: pointer; font-size: 13px;
+}
+.exam-num.cur { border-color: #7c3aed; box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.25); }
+.exam-num.done { background: #e0e7ff; }
+body.dark .exam-num.done { background: #312e81; color: #fff; }
+.exam-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.exam-submit { margin-left: auto; }
+.quiz-opt.selected { border-color: #7c3aed; box-shadow: inset 0 0 0 1px #7c3aed; }
+.review-item { border-bottom: 1px solid var(--line); padding: 10px 0; }
+
+#checkBtn {
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+#checkBtn:hover { background: var(--hover); transform: translateY(-1px); }
+.photo-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.photo-btn {
+  padding: 8px 14px; border: 1px dashed #7c3aed; border-radius: 10px;
+  background: transparent; color: #7c3aed; font-size: 14px; cursor: pointer;
+}
+.photo-btn:hover:not(:disabled) { background: rgba(124, 58, 237, 0.08); }
+.photo-btn:disabled { opacity: 0.6; cursor: default; }
+body.dark .photo-btn { color: #c4b5fd; border-color: #8b5cf6; }
+.photo-status { font-size: 13px; color: var(--muted); }
+
+/* ---------- Welcome Lamp (लैंप + रंगीन टेक्स्ट) ---------- */
+.wl-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 24px;
+  overflow: hidden;
+}
+
+/* लैंप का ढाँचा */
+.wl-lamp {
+  position: relative;
+  width: 180px;
+  height: 120px;
+  z-index: 3;
+}
+.wl-shade {
+  width: 170px;
+  height: 72px;
+  margin: 0 auto;
+  border-radius: 85px 85px 10px 10px;
+  background: linear-gradient(#4a4a56, #2a2a33);
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.25);
+  transition: background 0.6s ease;
+}
+.wl-bulb {
+  width: 44px;
+  height: 16px;
+  margin: -2px auto 0;
+  border-radius: 0 0 44px 44px;
+  background: #55556a;
+  transition: background 0.6s ease, box-shadow 0.6s ease;
+}
+
+/* डोरी */
+.wl-cord {
+  position: absolute;
+  right: 14px;
+  top: 74px;
+  width: 2px;
+  height: 58px;
+  background: #b8a46a;
+  cursor: pointer;
+}
+.wl-cord span {
+  position: absolute;
+  bottom: -14px;
+  left: -5px;
+  width: 12px;
+  height: 22px;
+  border-radius: 6px;
+  background: #ece2b5;
+  transition: transform 0.2s ease;
+}
+.wl-cord:hover span { transform: translateY(4px); }
+
+/* रोशनी का शंकु */
+.wl-cone {
+  position: absolute;
+  top: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 560px;
+  height: 340px;
+  clip-path: polygon(40% 0, 60% 0, 100% 100%, 0 100%);
+  background: linear-gradient(rgba(255, 216, 90, 0.55), rgba(255, 216, 90, 0) 88%);
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* लाइट ON होने पर */
+.wl-wrap.on .wl-cone { opacity: 1; }
+.wl-wrap.on .wl-shade { background: linear-gradient(#6a6a7a, #45454f); }
+.wl-wrap.on .wl-bulb {
+  background: #fff6cf;
+  box-shadow: 0 0 22px 6px rgba(255, 216, 77, 0.8);
+}
+
+/* प्रेरणा-पंक्तियाँ */
+.wl-text {
+  position: relative;
+  z-index: 2;
+  margin-top: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  font-size: 28px;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+/* बंद अवस्था */
+.wl-text span {
+  opacity: 0;
+  transform: translateY(18px) scale(0.96);
+  filter: blur(6px);
+  color: var(--muted);
+  transition:
+    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.9s ease,
+    letter-spacing 1.2s ease;
+  font-weight: 800;
+}
+
+/* चालू अवस्था: हर पंक्ति का अपना रंग-ढाल */
+.wl-wrap.on .wl-text span {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: drop-shadow(0 0 10px rgba(255, 216, 90, 0.45));
+  letter-spacing: 1.5px;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-size: 250% auto;
+  animation: wlFlow 5s ease-in-out infinite, wlFloat 3.2s ease-in-out infinite;
+}
+.wl-wrap.on .wl-text span:nth-child(1) {
+  background-image: linear-gradient(90deg, #fde68a, #fb923c, #f472b6, #fde68a);
+  transition-delay: 0.2s;
+}
+.wl-wrap.on .wl-text span:nth-child(2) {
+  background-image: linear-gradient(90deg, #67e8f9, #60a5fa, #a78bfa, #67e8f9);
+  transition-delay: 0.5s;
+  animation-delay: 0s, 0.6s;
+}
+.wl-wrap.on .wl-text span:nth-child(3) {
+  background-image: linear-gradient(90deg, #86efac, #facc15, #38bdf8, #86efac);
+  transition-delay: 0.8s;
+  animation-delay: 0s, 1.2s;
+}
+
+@keyframes wlFlow {
+  0%, 100% { background-position: 0% center; }
+  50% { background-position: 100% center; }
+}
+@keyframes wlFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* नीचे का संकेत */
+.wl-hint {
+  position: absolute;
+  bottom: 18px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  z-index: 2;
+  font-size: 13px;
+  color: var(--muted);
+}
+.wl-wrap.on .wl-hint { display: none; }
+
+/* मोबाइल */
+@media (max-width: 700px) {
+  .wl-text { font-size: 21px; margin-top: 40px; }
+  .wl-cone { width: 360px; }
+}
+
+/* डार्क मोड */
+body.dark .wl-text span { color: #9ca3af; }
+/* ---------- Glowing Search Bar ---------- */
+.glow-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin: 8px 0 4px;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: var(--bg);
+  transition: border-color 0.4s ease, box-shadow 0.5s ease, transform 0.3s ease;
+}
+
+.glow-search:hover {
+  transform: translateY(-1px);
+}
+
+.glow-search:focus-within {
+  border-color: #22d3ee;
+  box-shadow:
+    0 0 0 3px rgba(34, 211, 238, 0.15),
+    0 0 14px rgba(34, 211, 238, 0.55),
+    0 0 28px rgba(34, 211, 238, 0.25);
+  animation: glowPulse 2.4s ease-in-out infinite;
+}
+
+#chatSearch {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 12px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+}
+
+#chatSearch::placeholder {
+  color: var(--muted);
+  transition: opacity 0.3s ease;
+}
+
+#chatSearch:focus::placeholder {
+  opacity: 0.4;
+}
+
+.glow-search-btn {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #22d3ee, #0ea5e9);
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  transition: transform 0.25s ease, box-shadow 0.3s ease;
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.4);
+}
+
+.glow-search-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.7);
+}
+
+.glow-search-btn:active {
+  transform: scale(0.95);
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 3px rgba(34, 211, 238, 0.15),
+      0 0 14px rgba(34, 211, 238, 0.55),
+      0 0 28px rgba(34, 211, 238, 0.25);
+  }
+  50% {
+    box-shadow:
+      0 0 0 3px rgba(34, 211, 238, 0.25),
+      0 0 22px rgba(34, 211, 238, 0.75),
+      0 0 40px rgba(34, 211, 238, 0.35);
+  }
+}
+
+body.dark .glow-search {
+  background: #232327;
+  border-color: #3a3a3f;
+}
+
+/* सर्च से मेल न खाने वाली चैट छिपाएँ */
+#list > div.search-hidden {
+  display: none;
+}/* ---------- Glowing मैसेज इनपुट ---------- */
+#form {
+  align-items: center;
+}
+
+#form input#input {
+  flex: 1;
+  padding: 13px 18px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: var(--input);
+  color: var(--text);
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.4s ease, box-shadow 0.5s ease, transform 0.3s ease, background 0.3s ease;
+}
+
+#form input#input:hover {
+  transform: translateY(-1px);
+}
+
+#form input#input:focus {
+  border-color: #22d3ee;
+  background: var(--bg);
+  box-shadow:
+    0 0 0 3px rgba(34, 211, 238, 0.15),
+    0 0 14px rgba(34, 211, 238, 0.55),
+    0 0 28px rgba(34, 211, 238, 0.25);
+  animation: inputGlow 2.4s ease-in-out infinite;
+}
+
+#form input#input::placeholder {
+  color: var(--muted);
+  transition: opacity 0.3s ease;
+}
+
+#form input#input:focus::placeholder {
+  opacity: 0.4;
+}
+
+/* भेजें बटन */
+#form button {
+  padding: 0 26px;
+  height: 46px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #22d3ee, #0ea5e9);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.4);
+  transition: transform 0.25s ease, box-shadow 0.3s ease, filter 0.3s ease;
+}
+
+#form button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.7);
+  filter: brightness(1.05);
+}
+
+#form button:active {
+  transform: scale(0.96);
+}
+
+#form button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+@keyframes inputGlow {
+  0%, 100% {
+    box-shadow:
+      0 0 0 3px rgba(34, 211, 238, 0.15),
+      0 0 14px rgba(34, 211, 238, 0.55),
+      0 0 28px rgba(34, 211, 238, 0.25);
+  }
+  50% {
+    box-shadow:
+      0 0 0 3px rgba(34, 211, 238, 0.25),
+      0 0 22px rgba(34, 211, 238, 0.75),
+      0 0 40px rgba(34, 211, 238, 0.35);
+  }
+}
+
+/* डार्क मोड */
+body.dark #form input#input {
+  background: #232327;
+  border-color: #3a3a3f;
+}
+body.dark #form input#input:focus {
+  background: #1d1d21;
+}
+/* ---------- मैसेज इनपुट में सर्च आइकन ---------- */
+#form input#input {
+  padding-left: 44px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%238e8ea0' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M21 21l-4.3-4.3'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 16px center;
+  background-size: 18px 18px;
+  transition: border-color 0.4s ease, box-shadow 0.5s ease, transform 0.3s ease, background 0.3s ease;
+}
+
+/* फ़ोकस होने पर आइकन cyan हो जाए */
+#form input#input:focus {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2322d3ee' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M21 21l-4.3-4.3'/%3E%3C/svg%3E");
+}
+/* ---------- सर्च आइकन: dark mode में भी दिखे ---------- */
+body #form input#input,
+body.dark #form input#input {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%238e8ea0' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M21 21l-4.3-4.3'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: 16px center !important;
+  background-size: 18px 18px !important;
+  padding-left: 44px !important;
+}
+
+body #form input#input:focus,
+body.dark #form input#input:focus {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2322d3ee' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M21 21l-4.3-4.3'/%3E%3C/svg%3E") !important;
+}
+/* ---------- सभी साइडबार बटन: स्थिर glow + एक बार shine ---------- */
+#side > button {
+  position: relative;
+  overflow: hidden;
+  transform: none !important;
+  transition: box-shadow 0.35s ease, border-color 0.35s ease, background 0.3s ease !important;
+}
+
+/* Hover: सिर्फ़ cyan glow, कोई movement नहीं */
+#side > button:hover {
+  border-color: #22d3ee;
+  box-shadow: 0 0 12px rgba(34, 211, 238, 0.4);
+}
+
+/* Click के बाद (focus): glow स्थिर रहेगा */
+#side > button:focus {
+  outline: none;
+  border-color: #22d3ee;
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.55), 0 0 30px rgba(34, 211, 238, 0.2);
+}
+
+/* चमक की पट्टी */
+#side > button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
+
+/* शाइन सिर्फ़ एक बार click पर चलेगी */
+#side > button:focus::before {
+  animation: sideShineOnce 0.7s ease-out forwards;
+}
+@keyframes sideShineOnce {
+  from { left: -75%; }
+  to { left: 125%; }
+}
+
+/* डार्क मोड में बटन का बैकग्राउंड साफ़ रहे */
+body.dark #side > button {
+  background: #232327;
+  color: #e8e8ea;
+}
+body.dark #side > button:hover {
+  background: #2a2a31;
+}
+/* ---------- Top bar: Theme और Logout बटन (premium look) ---------- */
+#top {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.6);
+  transition: background 0.4s ease, border-color 0.4s ease;
+}
+body.dark #top {
+  background: rgba(20, 20, 24, 0.65);
+}
+
+#theme,
+#logout {
+  position: relative;
+  overflow: hidden;
+  transform: none !important;
+  padding: 7px 16px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background:
+    linear-gradient(var(--bg), var(--bg)) padding-box,
+    linear-gradient(90deg, #22d3ee, #7c3aed, #db2777) border-box;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: box-shadow 0.4s ease, background 0.3s ease;
+}
+
+/* Hover: स्थिर नरम glow, कोई movement नहीं */
+#theme:hover,
+#logout:hover {
+  box-shadow: 0 0 14px rgba(124, 58, 237, 0.35), 0 0 24px rgba(34, 211, 238, 0.2);
+  background:
+    linear-gradient(var(--hover), var(--hover)) padding-box,
+    linear-gradient(90deg, #22d3ee, #7c3aed, #db2777) border-box;
+}
+
+/* Click के बाद हल्का दबाव (एक बार) */
+#theme:active,
+#logout:active {
+  box-shadow: 0 0 6px rgba(124, 58, 237, 0.3);
+}
+
+/* चमक की एक बार चलने वाली पट्टी */
+#theme::before,
+#logout::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
+#theme:focus::before,
+#logout:focus::before {
+  animation: topShineOnce 0.7s ease-out forwards;
+}
+@keyframes topShineOnce {
+  from { left: -75%; }
+  to { left: 125%; }
+}
+
+/* Theme बटन का सूरज/चाँद थोड़ा बड़ा और चमकदार */
+#theme {
+  font-size: 15px;
+  padding: 5px 12px;
+}
+
+/* ---------- नमस्ते: प्रीमियम एनिमेटेड नाम-पट्टी ---------- */
+#who {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  border-radius: 999px;
+  color: transparent;
+  background: rgba(124, 58, 237, 0.08);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  box-shadow: 0 0 18px rgba(124, 58, 237, 0.25), inset 0 0 12px rgba(34, 211, 238, 0.08);
+  overflow: hidden;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s ease, border-color 0.5s ease;
+  animation: whoPanelIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* पूरे पैनल का हल्का उभार: पेज खुलते ही */
+@keyframes whoPanelIn {
+  from { opacity: 0; transform: translateY(-10px) scale(0.96); filter: blur(4px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+/* नाम का टेक्स्ट: रंग-ढाल की धीमी बहती लहर */
+#who {
+  background-image: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6, #fbbf24, #60a5fa);
+  background-size: 300% auto;
+  background-clip: padding-box;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: whoPanelIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both, whoFlow 6s linear infinite;
+}
+@keyframes whoFlow {
+  0% { background-position: 0% center; }
+  100% { background-position: 300% center; }
+}
+
+/* चमकती शीन: एक पट्टी बार-बार बाएँ से दाएँ जाती है */
+#who::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  transform: skewX(-18deg);
+  animation: whoSheen 3.6s ease-in-out infinite;
+  pointer-events: none;
+  -webkit-text-fill-color: initial;
+}
+@keyframes whoSheen {
+  0%, 35% { left: -60%; }
+  75%, 100% { left: 130%; }
+}
+
+/* 👋 हाथ: छोटा झूला */
+#who::before {
+  content: "👋";
+  display: inline-block;
+  -webkit-text-fill-color: initial;
+  transform-origin: 70% 70%;
+  animation: whoWave 2.8s ease-in-out infinite;
+}
+@keyframes whoWave {
+  0%, 60%, 100% { transform: rotate(0deg); }
+  8% { transform: rotate(14deg); }
+  16% { transform: rotate(-8deg); }
+  24% { transform: rotate(12deg); }
+  32% { transform: rotate(-4deg); }
+  40% { transform: rotate(0deg); }
+}
+
+/* Hover: पैनल हल्का उठे, glow बढ़े */
+#who:hover {
+  transform: translateY(-2px);
+  border-color: rgba(34, 211, 238, 0.6);
+  box-shadow: 0 0 26px rgba(34, 211, 238, 0.4), 0 6px 20px rgba(124, 58, 237, 0.3);
+}
+
+/* डार्क मोड */
+body.dark #who {
+  background-color: rgba(124, 58, 237, 0.12);
+  border-color: rgba(167, 139, 250, 0.35);
+}
+
+/* मोबाइल पर छोटा */
+@media (max-width: 700px) {
+  #who { font-size: 15px; padding: 5px 12px; }
+}
