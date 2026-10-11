@@ -11,7 +11,7 @@
 
   <!-- ===== MOBILE LAYOUT (sirf phone par, 768px se chhote screen) ===== -->
   <style>
-    #menuBtn, #backdrop { display: none; }
+    #menuBtn, #backdrop, #sideBack { display: none; }
 
     @media (max-width: 768px) {
       :root {
@@ -48,7 +48,7 @@
         width: 82%;
         max-width: 300px;
         margin: 0;
-        padding: 18px 14px;
+        padding: 18px 14px 90px;
         display: flex;
         flex-direction: column;
         gap: 8px;
@@ -60,6 +60,7 @@
         transition: transform 0.28s ease;
         box-shadow: 8px 0 30px rgba(0, 0, 0, 0.35);
       }
+      #side > * { flex-shrink: 0; }
       body.side-open #side { transform: translateX(0); }
       #side button {
         width: 100%;
@@ -67,6 +68,13 @@
         font-size: 15px;
         text-align: left;
         border-radius: 14px;
+      }
+      #sideBack {
+        display: block;
+        color: inherit;
+        background: var(--m-bg-soft);
+        border: 1px solid var(--m-border);
+        cursor: pointer;
       }
       body.side-open #backdrop {
         display: block;
@@ -228,6 +236,7 @@
       </svg>
       <span>Students AI</span>
     </div>
+    <button id="sideBack" type="button">← Back</button>
     <button id="homeBtn">🏠 Home Page</button>
     <button id="newChat">✨ New Chat</button>
 
@@ -291,6 +300,7 @@
       const menuBtn = document.getElementById('menuBtn');
       const backdrop = document.getElementById('backdrop');
       const side = document.getElementById('side');
+      const sideBack = document.getElementById('sideBack');
 
       const openSide = () => body.classList.add('side-open');
       const closeSide = () => body.classList.remove('side-open');
@@ -301,6 +311,12 @@
       backdrop.addEventListener('click', closeSide);
       side.addEventListener('click', (e) => {
         if (e.target.closest('button')) closeSide();
+      });
+
+      // ← Back: drawer band karke Home Page par wapas
+      sideBack.addEventListener('click', () => {
+        closeSide();
+        document.getElementById('homeBtn').click();
       });
     })();
 
