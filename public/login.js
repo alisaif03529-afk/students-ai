@@ -1,110 +1,113 @@
-const $ = (id) => document.getElementById(id);
-let mode = "login";
-let busy = false;
-let submitting = false;
+(function () {
+  const $ = (s) => document.querySelector(s);
+  const ring = $('#ring');
+  const content = $('#content');
+  const title = $('#title');
+  const sub = $('#sub');
+  const nameWrap = $('#nameWrap');
+  const nameInput = $('#name');
+  const emailInput = $('#email');
+  const pwInput = $('#password');
+  const form = $('#authForm');
+  const submit = $('#submit');
+  const err = $('#error');
+  const swText = $('#swText');
+  const swBtn = $('#swBtn');
 
-const TEXT = {
-  login: { title: "Welcome Back", sub: "अपने अकाउंट में लॉगिन करें", submit: "Sign In" },
-  signup: { title: "Create Account", sub: "नया अकाउंट बनाएँ", submit: "Sign Up" },
-};
-
-// फायरफ्लाइज़
-for (let i = 0; i < 30; i++) {
-  const s = document.createElement("span");
-  s.style.left = Math.random() * 100 + "vw";
-  s.style.top = Math.random() * 100 + "vh";
-  s.style.animationDelay = Math.random() * 6 + "s";
-  $("fireflies").appendChild(s);
-}
-
-// मोड बदलने पर टेक्स्ट और फ़ील्ड
-function applyMode(m) {
-  mode = m;
-  const t = TEXT[m];
-  $("title").textContent = t.title;
-  $("sub").textContent = t.sub;
-  $("submit").textContent = t.submit;
-  $("nameWrap").classList.toggle("open", m === "signup");
-  $("name").required = m === "signup";
-  $("error").textContent = "";
-  document.querySelectorAll(".tab").forEach((b) =>
-    b.classList.toggle("active", b.dataset.mode === m)
-  );
-}
-
-// कार्ड को घुमाकर मोड बदलना
-async function switchMode(m) {
-  if (m === mode || busy) return;
-  busy = true;
-  const card = $("authForm");
-
-  await card.animate(
-    [{ transform: "rotateY(0deg)" }, { transform: "rotateY(90deg)" }],
-    { duration: 280, easing: "ease-in" }
-  ).finished;
-
-  applyMode(m);
-
-  await card.animate(
-    [{ transform: "rotateY(-90deg)" }, { transform: "rotateY(0deg)" }],
-    { duration: 320, easing: "ease-out" }
-  ).finished;
-
-  busy = false;
-}
-
-document.querySelectorAll(".tab").forEach((b) =>
-  b.addEventListener("click", () => switchMode(b.dataset.mode))
-);
-
-// Google / GitHub (अभी सिर्फ़ message)
-document.querySelectorAll(".soc").forEach((b) =>
-  b.addEventListener("click", () => ($("error").textContent = "यह सुविधा जल्द आएगी।"))
-);
-
-// सबमिट (लॉगिन या साइन-अप)
-$("authForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  if (submitting) return;
-  $("error").textContent = "";
-
-  const btn = $("submit");
-  const label = btn.textContent;
-  submitting = true;
-  btn.disabled = true;
-  btn.textContent = "रुकें...";
-
-  const body = {
-    email: $("email").value,
-    password: $("password").value,
+  const TEXT = {
+    signup: {
+      title: 'Sign Up',
+      sub: 'Create your account',
+      btn: 'CREATE ACCOUNT',
+      swText: 'Already have an account?',
+      swBtn: 'Login',
+    },
+    login: {
+      title: 'Login',
+      sub: 'Welcome back',
+      btn: 'LOGIN',
+      swText: "Don't have an account?",
+      swBtn: 'Sign Up',
+    },
   };
-  if (mode === "signup") body.name = $("name").value;
 
-  try {
-    const res = await fetch("/api/auth/" + (mode === "signup" ? "signup" : "login"), {
-      method: "POST",
-      credentials: "same-origin",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      $("error").textContent = data.error || "कुछ गड़बड़ हुई (कोड " + res.status + ")";
-      return;
-    }
+  let mode = 'signup';
+  let busy = false;
 
-    // जाँचें कि सेशन सेव हुआ या नहीं
-    const me = await fetch("/api/auth/me", { credentials: "same-origin" });
-    if (!me.ok) {
-      $("error").textContent = "लॉगिन हुआ, पर सेशन सेव नहीं हुआ। server.js जाँचें।";
-      return;
-    }
-    location.href = "/index.html";
-  } catch (err) {
-    $("error").textContent = "सर्वर से कनेक्ट नहीं हो पाया।";
-  } finally {
-    submitting = false;
-    btn.disabled = false;
-    btn.textContent = label;
+  function apply(m) {
+    mode = m;
+    const t = TEXT[m];
+    title.textContent = t.title;
+    sub.textContent = t.sub;
+    submit.textContent = t.btn;
+    swText.textContent = t.swText;
+    swBtn.textContent = t.swBtn;
+    nameWrap.classList.toggle('hide', m !== 'signup');
+    nameInput.required = m === 'signup';
+    err.textContent = '';
   }
-});
+
+  // Ring 360deg ghoomta hai, aur content fade ke saath badalta hai
+  function swap(next) {
+    if (busy || next === mode) return;
+    busy = true;
+    ring.animate(
+      [{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }],
+      { duration: 800, easing: 'cubic-bezier(.4, 0, .2, 1)', composite: 'add' }
+    );
+    content.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, fill: 'forwards' }).onfinish = () => {
+      apply(next);
+      content.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, fill: 'forwards' }).onfinish = () => {
+        busy = false;
+      };
+    };
+  }
+
+  function setBusy(on) {
+    submit.disabled = on;
+    submit.textContent = on ? '...' : TEXT[mode].btn;
+  }
+
+  swBtn.addEventListener('click', () => swap(mode === 'signup' ? 'login' : 'signup'));
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (busy) return;
+    err.textContent = '';
+
+    const name = nameInput.value.trim();
+    const email = emailInput.value.trim();
+    const password = pwInput.value;
+
+    if (mode === 'signup' && !name) return (err.textContent = 'नाम लिखें');
+    if (!email || !password) return (err.textContent = 'ईमेल और पासवर्ड भरें');
+
+    setBusy(true);
+    try {
+      const body = mode === 'signup' ? { name, email, password } : { email, password };
+      const res = await fetch('/api/auth/' + mode, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify(body),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        err.textContent = data.error || 'कुछ गड़बड़ हुई, दोबारा कोशिश करें';
+        setBusy(false);
+        return;
+      }
+      location.href = '/index.html';
+    } catch (_) {
+      err.textContent = 'सर्वर से कनेक्ट नहीं हो पा रहा';
+      setBusy(false);
+    }
+  });
+
+  // Pehle se login ho to seedha index par bhejein
+  fetch('/api/auth/me', { credentials: 'same-origin' })
+    .then((r) => { if (r.ok) location.replace('/index.html'); })
+    .catch(() => {});
+
+  apply('signup');
+})();
