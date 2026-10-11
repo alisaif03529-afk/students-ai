@@ -2,7 +2,7 @@
 <html lang="hi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Students AI</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="glow.css" />
@@ -21,7 +21,13 @@
         --m-bg-soft: rgba(255, 255, 255, 0.06);
       }
 
-      html, body { margin: 0; height: 100%; overflow: hidden; }
+      html, body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        overscroll-behavior: none;
+        -webkit-text-size-adjust: 100%;
+      }
       body.app {
         display: flex;
         flex-direction: column;
@@ -44,6 +50,8 @@
         flex-direction: column;
         gap: 8px;
         overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
         z-index: 1000;
         transform: translateX(-100%);
         transition: transform 0.28s ease;
@@ -71,6 +79,7 @@
         width: 100%;
         min-width: 0;
         flex: 1;
+        min-height: 0;
         height: 100dvh;
         margin: 0;
         padding: 0;
@@ -80,6 +89,7 @@
 
       /* ===== Header ===== */
       #top {
+        flex-shrink: 0;
         display: flex;
         align-items: center;
         gap: 8px;
@@ -127,13 +137,15 @@
         cursor: pointer;
       }
 
-      /* ===== Chat ===== */
+      /* ===== Chat (yahin scroll hota hai) ===== */
       #chat {
-        flex: 1;
+        flex: 1 1 auto;
         min-height: 0;
         overflow-y: auto;
-        padding: 12px 12px 8px;
+        overscroll-behavior: contain;
         -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
+        padding: 12px 12px 8px;
       }
       #chat > * { max-width: 100%; }
 
@@ -177,6 +189,34 @@
         font-size: 16px;
         background: linear-gradient(135deg, var(--m-accent), var(--m-accent2));
       }
+
+      /* ===== Hero cards: phone par 2 column ===== */
+      #heroWrap .hr-stats,
+      #heroWrap .hr-tools {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+      }
+      .hr-card { padding: 14px !important; }
+    }
+
+    @media (max-width: 380px) {
+      #heroWrap .hr-stats,
+      #heroWrap .hr-tools { grid-template-columns: 1fr !important; }
+    }
+  </style>
+
+  <!-- ===== SCROLL FIX (phone) ===== -->
+  <style id="mobile-fix">
+    @media (max-width: 768px) {
+      html, body, body.app {
+        height: auto !important;
+        min-height: 100dvh !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+      }
+      #main, #chat { min-height: 0 !important; }
+      img, video, canvas, svg { max-width: 100%; }
+      * { box-sizing: border-box; }
     }
   </style>
 </head>
@@ -252,6 +292,7 @@
   <script src="rich.js"></script>
   <script src="about.js"></script>
   <script src="hero.js"></script>
+  <script src="mobile.js"></script>
 
   <!-- Mobile drawer: ☰ se kholna, backdrop ya sidebar button se band -->
   <script>
