@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Students AI</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="glow.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+
+  <!-- ===== MOBILE LAYOUT ===== -->
+  <style>
+    #menuBtn, #backdrop { display: none; }
+
+    @media (max-width: 768px) {
+      :root {
+        --m-accent: #22d3ee;
+        --m-accent2: #7c3aed;
+        --m-border: rgba(34, 211, 238, 0.35);
+        --m-bg-soft: rgba(255, 255, 255, 0.06);
+      }
+
+      html, body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        overscroll-behavior: none;
+        -webkit-text-size-adjust: 100%;
+      }
+      body.app {
+        display: flex;
+        flex-direction: column;
+        height: 100dvh;
+        width: 100%;
+        overflow: hidden;
+      }
+
+      /* ===== Sidebar drawer ===== */
+      #side {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100dvh;
+        width: 82%;
+        max-width: 300px;
+        margin: 0;
+        padding: 18px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+        z-index: 1000;
+        transform: translateX(-100%);
+        transition: transform 0.28s ease;
+        box-shadow: 8px 0 30px rgba(0, 0, 0, 0.35);
+      }
+      body.side-open #side { transform: translateX(0); }
+      #side button {
+        width: 100%;
+        padding: 12px 14px;
+        font-size: 15px;
+        text-align: left;
+        border-radius: 14px;
+      }
+      body.side-open #backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(2px);
+      }
+
+      /* ===== Main area ===== */
+      #main {
+        width: 100%;
+        min-width: 0;
+        flex: 1;
+        min-height: 0;
+        height: 100dvh;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ===== Header ===== */
+      #top {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        flex-wrap: nowrap;
+      }
+      #menuBtn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        flex-shrink: 0;
+        font-size: 20px;
+        color: inherit;
+        background: var(--m-bg-soft);
+        border: 1px solid var(--m-border);
+        border-radius: 14px;
+        cursor: pointer;
+        box-shadow: 0 0 12px rgba(34, 211, 238, 0.15);
+      }
+      #who {
+        flex: 1;
+        min-width: 0;
+        font-size: 14px;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      #top > div {
+        display: flex;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+      #top button {
+        height: 42px;
+        min-width: 42px;
+        padding: 0 12px;
+        font-size: 13px;
+        color: inherit;
+        background: var(--m-bg-soft);
+        border: 1px solid var(--m-border);
+        border-radius: 14px;
+        cursor: pointer;
+      }
+
+      /* ===== Chat (yahin scroll hota hai) ===== */
+      #chat {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
+        padding: 12px 12px 8px;
+      }
+      #chat > * { max-width: 100%; }
+
+      /* ===== Input bar ===== */
+      #form {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px calc(12px + env(safe-area-inset-bottom));
+        border-top: 1px solid rgba(128, 128, 128, 0.2);
+      }
+      /* Language dropdown phone par chhupa */
+      #form select { display: none !important; }
+
+      #input {
+        flex: 1 1 auto;
+        min-width: 0;
+        width: 100%;
+        height: 56px;
+        padding: 0 20px 0 48px;
+        font-size: 16px; /* iOS/Android zoom rokta hai */
+        border-radius: 999px;
+        border: 1px solid var(--m-border);
+        outline: none;
+      }
+      #input:focus { box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.25); }
+
+      #form button {
+        height: 56px;
+        min-width: 56px;
+        flex-shrink: 0;
+        border: none;
+        border-radius: 999px;
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      #form button:last-child {
+        padding: 0 26px;
+        font-size: 16px;
+        background: linear-gradient(135deg, var(--m-accent), var(--m-accent2));
+      }
+
+      /* ===== Hero cards: phone par 2 column ===== */
+      #heroWrap .hr-stats,
+      #heroWrap .hr-tools {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+      }
+      .hr-card { padding: 14px !important; }
+    }
+
+    @media (max-width: 380px) {
+      #heroWrap .hr-stats,
+      #heroWrap .hr-tools { grid-template-columns: 1fr !important; }
+    }
+  </style>
+
+  <!-- ===== SCROLL FIX (phone) ===== -->
+  <style id="mobile-fix">
+    @media (max-width: 768px) {
+      html, body, body.app {
+        height: auto !important;
+        min-height: 100dvh !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+      }
+      #main, #chat { min-height: 0 !important; }
+      img, video, canvas, svg { max-width: 100%; }
+      * { box-sizing: border-box; }
+    }
+  </style>
+</head>
+<body class="app">
+  <aside id="side">
+    <div id="brand">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true">
+        <defs>
+          <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#2563eb" />
+            <stop offset="1" stop-color="#7c3aed" />
+          </linearGradient>
+        </defs>
+        <rect width="32" height="32" rx="9" fill="url(#lg)" />
+        <path d="M16 7 L26 12 L16 17 L6 12 Z" fill="#ffffff" />
+        <path d="M10 14 V20 C10 22 13 23 16 23 C19 23 22 22 22 20 V14 L16 17 Z" fill="#dbeafe" />
+        <path d="M26 12 V18" stroke="#ffffff" stroke-width="1.5" />
+      </svg>
+      <span>Students AI</span>
+    </div>
+    <button id="homeBtn">🏠 Home Page</button>
+    <button id="newChat">✨ New Chat</button>
+
+    <button id="notesBtn">📝 My Notes</button>
+    <button id="bookBtn">📚 CBSE / BSEB Books</button>
+    <button id="doubtBtn">🧮 AI Doubt Solver</button>
+    <button id="quizBtn">🎯 AI Quiz</button>
+    <button id="analyticsBtn" type="button">📊 Performance</button>
+    <button id="qgenBtn">📝 Questions Genrator</button>
+    <button id="examBtn">🏆 Exam Preparation</button>
+    <button id="checkBtn">✍️ Answer Check</button>
+    <button id="gamifyBtn" type="button">🏅 Study Game</button>
+    <button id="guidanceBtn" type="button">🧭 Career & Skills</button>
+
+    <div id="list"></div>
+  </aside>
+
+  <div id="backdrop"></div>
+
+  <section id="main">
+    <div id="top">
+      <button id="menuBtn" aria-label="Menu">☰</button>
+      <span id="who"></span>
+      <div>
+        <button id="theme" title="Theme Change">🌙</button>
+        <button id="logout">Logout</button>
+      </div>
+    </div>
+    <div id="chat"></div>
+    <form id="form">
+      <input id="input" placeholder="Write Message..." autocomplete="off" />
+      <button>Send</button>
+    </form>
+  </section>
+
+  <script src="script.js"></script>
+  <script src="books.js"></script>
+  <script src="doubt.js"></script>
+  <script src="quiz.js"></script>
+
+  <script src="questions.js"></script>
+  <script src="exam.js"></script>
+  <script src="check.js"></script>
+  <script src="history.js"></script>
+  <script src="welcome.js"></script>
+  <script src="home.js"></script>
+  <script src="analytics.js"></script>
+  <script src="guidance.js"></script>
+  <script src="gamify.js"></script>
+  <script src="voice.js"></script>
+  <script src="donate.js"></script>
+  <script src="profile.js"></script>
+  <script src="rich.js"></script>
+  <script src="about.js"></script>
+  <script src="hero.js"></script>
+  <script src="mobile.js"></script>
+
+  <!-- Mobile drawer: ☰ se kholna, backdrop ya sidebar button se band -->
+  <script>
+    (function () {
+      const body = document.body;
+      const menuBtn = document.getElementById('menuBtn');
+      const backdrop = document.getElementById('backdrop');
+      const side = document.getElementById('side');
+
+      const openSide = () => body.classList.add('side-open');
+      const closeSide = () => body.classList.remove('side-open');
+
+      menuBtn.addEventListener('click', () => {
+        body.classList.contains('side-open') ? closeSide() : openSide();
+      });
+      backdrop.addEventListener('click', closeSide);
+      side.addEventListener('click', (e) => {
+        if (e.target.closest('button')) closeSide();
+      });
+    })();
+  </script>
+</body>
+</html>
